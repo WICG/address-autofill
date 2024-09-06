@@ -136,7 +136,7 @@ In this API shape, we’d need some [control mechanism](https://github.com/w3cta
 # Isn’t this proposal the same as..
 
 
-## `[requestAutocomplete](https://web.dev/articles/requestautocomplete)`
+## [`requestAutocomplete`](https://web.dev/articles/requestautocomplete)
 
 
 
