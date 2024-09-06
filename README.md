@@ -75,8 +75,8 @@ In terms of UI, this API shape decouples autofill from a specific form, and henc
 
 It could have UI similar to the following:
 
+![UI mock](https://github.com/user-attachments/assets/80aaa8ec-59e1-4cfa-84a6-9daec5dbb7a2)
 
-![alt_text](images/image1.png "image_tooltip")
 
 
 That would enable further decoupling of autofill from forms, and enable totally new UX patterns to be used in combination with Autofill.
