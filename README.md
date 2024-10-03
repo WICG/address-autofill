@@ -67,6 +67,15 @@ With the above steps in place we pave the way to change the default to stop auto
 3. Deprecation period: gradually change behavior to default-off.
 
 
+# Alternatives Solutions
+As discussed during TPAC 2024, an alternative to the above described flow could be to make Autofill a two-stage process. The JS handler is called when the country has been filled, giving the website a chance to update it's UX. In the JS handler the website indicates when the website has been updated which gives the browser a signal when to continue autofilling.
+
+This has the advantage of not needing to decide on an address format for the JS handler because the address is still shared through the form fields and the browser knows which fields are autofilled.
+
+Disadvantages of this approach are:
+* We could end up in a multi-stage process where the address format depends on more than 1 field. E.g. country, region, rest
+* The JS handler to receive the autofill values feels like a more modern API
+
 # Open questions
 1. Format of the provided data. In breakout a new ISO standard was mentioned that we need to investigate.
 2. Browser extensions like password managers also offer autofill and for that they alter the DOM. 
