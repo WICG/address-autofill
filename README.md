@@ -68,7 +68,7 @@ With the above steps in place we pave the way to change the default to stop auto
 
 
 # Alternatives Solutions
-As discussed during TPAC 2024, an alternative to the above described flow could be to make Autofill a two-stage process. The JS handler is called when the country has been filled, giving the website a chance to update it's UX. In the JS handler the website indicates when the website has been updated which gives the browser a signal when to continue autofilling.
+As discussed during TPAC 2024 ([slides](https://drive.google.com/file/d/1_kwR2yXXyNB7lMAknMO3gkw-wjJnhO66/view?usp=drive_link) and [minutes](https://gist.github.com/yoavweiss/b919e665ff91a047cbef3ea9ae7f01ba)), an alternative to the above described flow could be to make Autofill a two-stage process. The JS handler is called when the country has been filled, giving the website a chance to update it's UX. In the JS handler the website indicates when the website has been updated which gives the browser a signal when to continue autofilling.
 
 This has the advantage of not needing to decide on an address format for the JS handler because the address is still shared through the form fields and the browser knows which fields are autofilled.
 
