@@ -18,48 +18,30 @@ Autofill providers: give 3P autofill providers hooks that work seamlessly with n
 
 # Proposal
 
-## 1. Provide `full-address` as a new atomic address unit
-When a user selects an address to autofill, their goal and expectation is that it is filled fully and accurately. If the form needs to be updated to match requirements of their geography, that should happen and the resulting form should contain accurate information. This behavior is excessively hard and brittle to implement correctly today.
+## 1. Javascript handler for autofill
+In certain situations, the form triggering autofill needs to be adapted based on the autofilled values, or the website needs to perform other custom logic before values can be autofilled. Today, since autofill does not trigger any JS events, websites cannot react to such situations.
 
-To solve the problem of the dynamic nature of address formats depending on the country and region and the resulting dynamic forms (e.g. forms hide/show input fields depending on country or region selection), we propose a new `full-address` attribute that provides address as atomic unit:
 
-```javascript
-<form autocomplete="full-address" onautofill="autofillhandler">
-...
-</form>
-```
-
-`full-address` acts as an enhancement to existing behavior. Autofill can continue to use form input fields to preview and fill the fields when the user confirms their selection. Presence of full-address indicates that the browser should also provide a structured address object that the developer can process and use to implement own validation and fill behavior.
-
-![](https://screenshot.click/26-11-29h70-lrrrj.png)
-*Some browsers provide a preview state where selected address information is shown in the form but not yet visible to the page and script. This behavior is great and can remain as is.*
-
-With `full-address` site owners can eliminate the need for and use of hidden input fields for address. 
-
-## 2. Javascript handler for autofill
-In the HTML spec, the [autocomplete attribute fulfills two separate roles](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofilling-form-controls%3A-the-autocomplete-attribute): the spec talks about the autofill expectation mantle vs. the anchor mantle. In short, we rely on input fields to represent both the information that users would expect the browser to fill, as well as the place in which the browser would fill it (and to an extent, the UI in which users interact with the autofill browser feature). We believe it should be also possible to split these apart, to allow site owners with custom logic to bring their own validation and fill behaviors.
-
-We are proposing to introduce an event handler on the form element for autofill events to allow receiving autofilled values. This event would be the primary consumer of `full-address` object:
+We are proposing to introduce an event handler on the form element for autofill events to allow receiving autofilled values:
 ```javascript
 <script>
 const autofillhandler = event => {
-  const validated_values = validate(event.autofill_values());
-  updateAddress(validated_values);
-  event.preventDefault(); // stop browser autofill in favor of custom validation+fill logic
+  const validated_values = updateForm(event.autofill_values());
+  ... logic ...
 };
 </script>
 
 
-<form onautofill="autofillhandler" autocomplete="full-address">...</form>
+<form onautofill="autofillhandler">...</form>
 ```
 
-When the user commits to autofill, the form’s onautofill delegate is called with requested autocomplete data in structured format. At this point the developer can perform own validations and transforms on provided data, update the form, and fill it.
+When the user commits to autofill, the form’s onautofill delegate is called with requested autocomplete data in structured format. At this point the developer can perform their own validations and transforms on provided data and modify the form, before the control is passed back to the browser to perform the actual autofill.
 
-Exposing Javascript handler also opens opportunities for alternative autofill providers to provide data to the site. For example, a password manager that contains one or several addresses can invoke the handler with the same structured data, ensuring that site-specific code and behavior is executed and applied.
+An important aspect to note is that the JS handler is not supposed to actually perform the autofill operation. This is left to the browser after the event handler has completed its work, to ensure the browser is able to indicate what values have actually been autofilled (e.g. providing a different background for autofilled values after the fill operation).
 
-The Contact Picker API allows you to prompt the user to select a contact from their phone and share the information with the requesting website. 
+Exposing a Javascript handler also opens opportunities for alternative autofill providers to provide data to the site. For example, a password manager that contains one or several addresses can invoke the handler with the same structured data, ensuring that site-specific code and behavior is executed and applied.
 
-##  3. Deprecate auto-filling of hidden fields
+##  2. Deprecate auto-filling of hidden fields
 With the above steps in place we pave the way to change the default to stop autofill of hidden fields. This behavior was suggested in [W3C fork of the spec](https://github.com/w3c/html/blob/master/sections/semantics-forms.include#L10764-L10779) but has never made it into the official specification. Practically, such a process would likely require.. 
 
 1. User preference: allow users to toggle behavior on/off, as a privacy enhancement.
