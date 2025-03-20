@@ -26,8 +26,9 @@ We are proposing to introduce an event handler on the form element for autofill 
 ```javascript
 <script>
 const autofillhandler = event => {
-  const validated_values = updateForm(event.autofill_values());
-  ... logic ...
+  event.waitForIt(async () => {
+    await updateFormAsync(event.autofill_values());
+  }
 };
 </script>
 
@@ -35,9 +36,15 @@ const autofillhandler = event => {
 <form onautofill="autofillhandler">...</form>
 ```
 
-When the user commits to autofill, the form’s onautofill delegate is called with requested autocomplete data in structured format. At this point the developer can perform their own validations and transforms on provided data and modify the form, before the control is passed back to the browser to perform the actual autofill.
+The event object passed to the handler has two unique properties:
+* An `autofill_values()` method that returns an object with key/value pairs that represent the autofilled names and values. Developers can use that to update their forms to be able to accept all the relevant values (e.g. based on the autofilled country).
+* A `waitForIt()` method where the developer can pass in a Promise. When that method is called, the current autofill pass gets delayed and will be retriggered when the promise is resolved.
 
-An important aspect to note is that the JS handler is not supposed to actually perform the autofill operation. This is left to the browser after the event handler has completed its work, to ensure the browser is able to indicate what values have actually been autofilled (e.g. providing a different background for autofilled values after the fill operation).
+When the user commits to autofill, the form’s onautofill handler is called. The developer can use the `autofill_values()` call to know what data is about to be filled.
+At this point they can perform their own validations and and modify the form to accomodate the data.
+If those form modifications are async (e.g. require a fetch, or done through virtual DOM changes), the developer notifies the browser of that using the `waitForIt()` call, passing a Promise that will be resolved when the modification is done.
+
+An important aspect to note is that the JS handler is not supposed to actually perform the autofill operation. This is left to the browser after the event handler has completed its work and the relevant Promise is resolved, to ensure the browser is able to indicate what values have actually been autofilled (e.g. providing a different background for autofilled values after the fill operation).
 
 Exposing a Javascript handler also opens opportunities for alternative autofill providers to provide data to the site. For example, a password manager that contains one or several addresses can invoke the handler with the same structured data, ensuring that site-specific code and behavior is executed and applied.
 
