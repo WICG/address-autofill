@@ -11,15 +11,15 @@ One key example is address autofill which, when implemented correctly, is a dyna
 The ‘industry standard’ solution for this requires use of hidden form fields that try to anticipate and capture the right information and then surface it to the user. This solution is brittle and complex. Worse, it entrenches use of hidden fields to power legitimate use cases, but the same technique can be and is also often abused by bad actors.
 
 We think we can improve autofill and it’s value on all fronts:
-Users: make it more reliable and pave the path for potential deprecation of filling of hidden fields
-Site developers: standardize API and behavior to simplify implementation for site owners
-Autofill providers: give 3P autofill providers hooks that work seamlessly with new API
+- **Users**: make it more reliable and pave the path for potential deprecation of filling of hidden fields
+- **Site developers**: standardize API and behavior to simplify implementation for site owners
+- **Autofill providers**: give 3P autofill providers hooks that work seamlessly with new API
 
 
 # Proposal
 
 ## 1. Javascript handler for autofill
-In certain situations, the form triggering autofill needs to be adapted based on the autofilled values, or the website needs to perform other custom logic before values can be autofilled. Today, since autofill does not trigger any JS events, websites cannot react to such situations.
+In certain situations, the form triggering autofill needs to be adapted dynamically based on the autofilled values (as we cannot rely on mechanisms such as geolocation, this usually is once the country is entered), or the website needs to perform other custom logic before values can be autofilled. Today, since autofill does not trigger any JS events, websites cannot react to such situations.
 
 
 We are proposing to introduce an event handler on the form element for autofill events to allow receiving autofilled values:
@@ -38,22 +38,22 @@ const autofillhandler = event => {
 
 The event object passed to the handler has two unique properties:
 * An `autofill_values()` method that returns an object with key/value pairs that represent the autofilled names and values. Developers can use that to update their forms to be able to accept all the relevant values (e.g. based on the autofilled country).
-* A `waitForIt()` method where the developer can pass in a Promise. When that method is called, the current autofill pass gets delayed and will be retriggered when the promise is resolved.
+* A `waitForIt()` method where the developer can pass in a Promise. When that method is called, the current autofill pass suspends and will be retriggered when the promise is resolved, (TBC: reasonable bailout timeout threshold to ensure this won't deadlock the users action).
 
-When the user commits to autofill, the form’s onautofill handler is called. The developer can use the `autofill_values()` call to know what data is about to be filled.
+When the user commits to autofill, the form’s `onautofill` handler (`autofillhandler` in the sample above) is called. The developer can use the `autofill_values()` call to know what data is about to be filled.
 At this point they can perform their own validations and and modify the form to accomodate the data.
 If those form modifications are async (e.g. require a fetch, or done through virtual DOM changes), the developer notifies the browser of that using the `waitForIt()` call, passing a Promise that will be resolved when the modification is done.
 
-An important aspect to note is that the JS handler is not supposed to actually perform the autofill operation. This is left to the browser after the event handler has completed its work and the relevant Promise is resolved, to ensure the browser is able to indicate what values have actually been autofilled (e.g. providing a different background for autofilled values after the fill operation).
+An important aspect to note is that the JS handler is not supposed to actually perform the autofill operation. This is left to the browser after the event handler has completed its work and the relevant Promise is resolved, to ensure the browser is able to indicate what values have actually been autofilled (e.g. providing a different background for autofilled values after the fill operation, or preserving the behaviour for "undo autofill" which clears the state of the autofilled values preserving manually entered information).
 
 Exposing a Javascript handler also opens opportunities for alternative autofill providers to provide data to the site. For example, a password manager that contains one or several addresses can invoke the handler with the same structured data, ensuring that site-specific code and behavior is executed and applied.
 
 ##  2. Deprecate auto-filling of hidden fields
 With the above steps in place we pave the way to change the default to stop autofill of hidden fields. This behavior was suggested in [W3C fork of the spec](https://github.com/w3c/html/blob/master/sections/semantics-forms.include#L10764-L10779) but has never made it into the official specification. Practically, such a process would likely require.. 
 
-1. User preference: allow users to toggle behavior on/off, as a privacy enhancement.
-2. Site Opt-in period: allow sites to signal and opt-out from hidden fields autofill 
-3. Deprecation period: gradually change behavior to default-off.
+1. **User preference**: allow users to toggle behavior on/off, as a privacy enhancement.
+2. **Site Opt-in period**: allow sites to signal and opt-out from hidden fields autofill 
+3. **Deprecation period**: gradually change behavior to default-off.
 
 
 # Alternatives Solutions
