@@ -71,3 +71,6 @@ Disadvantages of this approach are:
     1. These browser extensions should provide the same behaviour like the browsers autofill. Do we need a browser API that let’s browser extensions trigger autofill with its own values?
     2. TODO: Nicholas Steele from 1password expressed interest in this
 3. ...
+
+Status badge: 
+[![CI](https://github.com/shadowemperor1510/address-autofill/actions/workflows/blank.yml/badge.svg)](https://github.com/shadowemperor1510/address-autofill/actions/workflows/blank.yml)
