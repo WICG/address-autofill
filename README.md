@@ -26,48 +26,40 @@ We are proposing to introduce an event handler on the form element for autofill 
 ```javascript
 <script>
 const autofillhandler = event => {
-  event.waitForIt(async () => {
+  event.refill(async () => {
     await updateFormAsync(event.autofill_values());
   }
 };
+document.addEventListener("autofill", autofillhandler);
 </script>
 
-
-<form onautofill="autofillhandler">...</form>
 ```
+
 
 The event object passed to the handler has two unique properties:
 * An `autofill_values()` method that returns an object with key/value pairs that represent the autofilled names and values. Developers can use that to update their forms to be able to accept all the relevant values (e.g. based on the autofilled country).
-* A `waitForIt()` method where the developer can pass in a Promise. When that method is called, the current autofill pass gets delayed and will be retriggered when the promise is resolved.
+* A `refill()` method where the developer can pass in a Promise. When that method is called, the current autofill pass gets delayed and will be retriggered when the promise is resolved.
 
-When the user commits to autofill, the form’s onautofill handler is called. The developer can use the `autofill_values()` call to know what data is about to be filled.
-At this point they can perform their own validations and and modify the form to accomodate the data.
-If those form modifications are async (e.g. require a fetch, or done through virtual DOM changes), the developer notifies the browser of that using the `waitForIt()` call, passing a Promise that will be resolved when the modification is done.
+After the user agent autofills, the form’s onautofill handler is called. The developer can use the `autofill_values()` call to know what data is about to be filled.
+At this point they can perform their own validations and and modify the form to accomodate the data, an operation that may be async. (e.g. require a fetch, or done through virtual DOM changes)
+
+The form modification function is passed to the `refill()` method. When the promise the form modification function returns is resolved, that tells the browser the modifications are done and that it should retrigger autofill on the form.
 
 An important aspect to note is that the JS handler is not supposed to actually perform the autofill operation. This is left to the browser after the event handler has completed its work and the relevant Promise is resolved, to ensure the browser is able to indicate what values have actually been autofilled (e.g. providing a different background for autofilled values after the fill operation).
 
 Exposing a Javascript handler also opens opportunities for alternative autofill providers to provide data to the site. For example, a password manager that contains one or several addresses can invoke the handler with the same structured data, ensuring that site-specific code and behavior is executed and applied.
 
-##  2. Deprecate auto-filling of hidden fields
+##  2. "full-address"
+
+We are also proposing a "full-address" `autocomplete` attribute value on the form, that would enable the browser to know to ask permissions for the user's full address, beyond the fields that are present in the current form.
+
+##  3. Deprecate auto-filling of hidden fields
 With the above steps in place we pave the way to change the default to stop autofill of hidden fields. This behavior was suggested in [W3C fork of the spec](https://github.com/w3c/html/blob/master/sections/semantics-forms.include#L10764-L10779) but has never made it into the official specification. Practically, such a process would likely require.. 
 
 1. User preference: allow users to toggle behavior on/off, as a privacy enhancement.
 2. Site Opt-in period: allow sites to signal and opt-out from hidden fields autofill 
 3. Deprecation period: gradually change behavior to default-off.
 
-
-# Alternatives Solutions
-As discussed during TPAC 2024 ([slides](https://drive.google.com/file/d/1_kwR2yXXyNB7lMAknMO3gkw-wjJnhO66/view?usp=drive_link) and [minutes](https://gist.github.com/yoavweiss/b919e665ff91a047cbef3ea9ae7f01ba)), an alternative to the above described flow could be to make Autofill a two-stage process. The JS handler is called when the country has been filled, giving the website a chance to update it's UX. In the JS handler the website indicates when the website has been updated which gives the browser a signal when to continue autofilling.
-
-This has the advantage of not needing to decide on an address format for the JS handler because the address is still shared through the form fields and the browser knows which fields are autofilled.
-
-Disadvantages of this approach are:
-* We could end up in a multi-stage process where the address format depends on more than 1 field. E.g. country, region, rest
-* The JS handler to receive the autofill values feels like a more modern API
-
 # Open questions
-1. Format of the provided data. In breakout a new ISO standard was mentioned that we need to investigate.
-2. Browser extensions like password managers also offer autofill and for that they alter the DOM. 
-    1. These browser extensions should provide the same behaviour like the browsers autofill. Do we need a browser API that let’s browser extensions trigger autofill with its own values?
-    2. TODO: Nicholas Steele from 1password expressed interest in this
-3. ...
+1. Do we need `autofill_values()`? Maybe we can pass the relevant form(s) on the event object instead?
+2. Browser extensions like password managers also offer autofill and for that they alter the DOM. How would they deal with this model?
