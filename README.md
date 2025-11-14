@@ -18,40 +18,89 @@ Autofill providers: give 3P autofill providers hooks that work seamlessly with n
 
 # Proposal
 
-## 1. Javascript handler for autofill
-In certain situations, the form triggering autofill needs to be adapted based on the autofilled values, or the website needs to perform other custom logic before values can be autofilled. Today, since autofill does not trigger any JS events, websites cannot react to such situations.
+## 1. Programmatic refills
 
+At a high level, when the user autofills a set of fields in a page:
 
-We are proposing to introduce an event handler on the form element for autofill events to allow receiving autofilled values:
-```javascript
-<script>
-const autofillhandler = event => {
-  event.refill(async () => {
-    await updateFormAsync(event.autofill_values());
-  }
-};
-document.addEventListener("autofill", autofillhandler);
-</script>
+1. Before filling, Autofill will fire a new DOM event of type `autofill`, to every document involved in the fill (see below).
+2. Each event's target will be the frame document that contains the fields that will be filled.
+3. The event handler will be able to _request a re-fill_ within a browser-specific time window (and subject to other browser constraints).
+   The browser will either:
+   
+   * resolve the promise after extracting and refilling the form, or
+   * reject the promise.
 
+This allows the website to dynamically change its DOM based on the original fill happening, without blocking the initial fill.
+It also allows the browser to control the re-fill process to meet user expectations and security requirements, whilst also keeping the website appraised on how that turns out.
+
+### JavaScript interface
+
+In TypeScript, the interface might be roughly equivalent to the following:
+
+```typescript
+interface DocumentEventMap {
+  'autofill': AutofillEvent;
+}
+
+interface AutofillEvent extends Event {
+  readonly values:         ReadonlyArray<readonly [HTMLElement, string]>;
+  readonly triggerElement: HTMLElement | null;
+  readonly refill:         () => Promise<void> | null;
+}
 ```
 
+The event is fired before the autofill is carried out – in particular, before any `focus`, `change`, `blur`, or other events that may be fired by autofilling a field.
+This ordering makes it easier for websites to distinguish between autofills and manual changes.
+The event's target is the `document` because the Autofill implementation's notion of "form" may only loosely follow the `HTMLFormElement` association; it might for example span shadow and light DOMs or even multiple documents.
+The event does not bubble and is not cancelable.
 
-The event object passed to the handler has two unique properties:
-* An `autofill_values()` method that returns an object with key/value pairs that represent the autofilled names and values. Developers can use that to update their forms to be able to accept all the relevant values (e.g. based on the autofilled country).
-* A `refill()` method where the developer can pass in a Promise. When that method is called, the current autofill pass gets delayed and will be retriggered when the promise is resolved.
+The event's `values` attribute maps each element to the autofilled value.
+It includes the value to be autofilled because other event handlers may modify `HTMLElement.value`, and because the value might not fit into the form control element.
 
-After the user agent autofills, the form’s onautofill handler is called. The developer can use the `autofill_values()` call to know what data is about to be filled.
-At this point they can perform their own validations and and modify the form to accomodate the data, an operation that may be async. (e.g. require a fetch, or done through virtual DOM changes)
+The event's `triggerElement` is usually the element from which the user triggered the Autofill event.
+It is `null` if the autofill was not triggered from any `HTMLElement` in that `document`.
 
-The form modification function is passed to the `refill()` method. When the promise the form modification function returns is resolved, that tells the browser the modifications are done and that it should retrigger autofill on the form.
+The element types are `HTMLElement` instead of `HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement ...` because of contenteditable and form-associated custom elements.
 
-An important aspect to note is that the JS handler is not supposed to actually perform the autofill operation. This is left to the browser after the event handler has completed its work and the relevant Promise is resolved, to ensure the browser is able to indicate what values have actually been autofilled (e.g. providing a different background for autofilled values after the fill operation).
+The event's `refill()` function initiates a refill on its first call.
+The promise is resolved after the refill has happened, and rejected otherwise.
+For example, an Autofill implementation may decline a refill because the form changed substantially.
+Subsequent `refill()` calls return a rejected promise.
 
-Exposing a Javascript handler also opens opportunities for alternative autofill providers to provide data to the site. For example, a password manager that contains one or several addresses can invoke the handler with the same structured data, ensuring that site-specific code and behavior is executed and applied.
+The event's `refill` is `null` if refills are not supported.
+That may be the case if the event is already triggered by a refill or if the browser does not support refills for the fill data.
+For example, an Autofill implementation might not support refills only for addresses but not for banking details.
+
+### Example code
+
+```html
+<input autocomplete=street-address>
+<!-- Maybe other fields. -->
+<input autocomplete=country>
+
+<script>
+  document.addEventListener('autofill', async function(e) {
+    // Real code would walk the values to find the right HTMLElement.
+    if (e.refill !== null && e.values[2][1] === 'US') {
+      const state = document.createElement('select');
+      state.autocomplete = 'address-level1';
+      state.innerHTML = `<option>California</option> ...`;
+      document.appendChild(state);
+      await e.refill();
+    }
+  });
+</script>
+```
+
+### Open questions
+
+* Should the browser help distinguishing `focus`, `change`, `blur`, and other events caused by Autofill from others?
+* Should the effect of `AutofillEvent.refill()` be limited to the calling frame or can it also affect other frames?
+* What is the effect if multiple (possibly cross-origin) frames call `AutofillEvent.refill()` 'simultaneously'? Can information be communicated this way?
 
 ##  2. "full-address"
 
-We are also proposing a "full-address" `autocomplete` attribute value on the form, that would enable the browser to know to ask permissions for the user's full address, beyond the fields that are present in the current form.
+We are also proposing a "full-address" `autocomplete` attribute value on the form, that would enable the browser to ask permissions for the user's full address, beyond the fields that are present in the current form.
 
 ##  3. Deprecate auto-filling of hidden fields
 With the above steps in place we pave the way to change the default to stop autofill of hidden fields. This behavior was suggested in [W3C fork of the spec](https://github.com/w3c/html/blob/master/sections/semantics-forms.include#L10764-L10779) but has never made it into the official specification. Practically, such a process would likely require.. 
