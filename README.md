@@ -43,7 +43,7 @@ interface DocumentEventMap {
 }
 
 interface AutofillEvent extends Event {
-  readonly values:         ReadonlyArray<readonly [HTMLElement, string]>;
+  readonly values:         ReadonlyArray<readonly [HTMLElement, string | boolean]>;
   readonly triggerElement: HTMLElement | null;
   readonly refill:         () => Promise<void> | null;
 }
@@ -56,6 +56,7 @@ The event's target is the `document` because the Autofill implementation's notio
 The event does not bubble and is not cancelable.
 
 The event's `values` property maps each element to value to be autofilled.
+If the element is a checkbox or radio button, the value is a `boolean`; otherwise it is a `string`.
 It is not guaranteed that the element actually has that value after the autofill.
 Examples where the value may differ after the autofill include:
 an event handler changes or removes the element;
