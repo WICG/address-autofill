@@ -50,12 +50,18 @@ interface AutofillEvent extends Event {
 ```
 
 The event is fired before the autofill is carried out – in particular, before any `focus`, `change`, `blur`, or other events that may be fired by autofilling a field.
-This ordering makes it easier for websites to distinguish between autofills and manual changes.
+That is, the event signals the user agent's *intention* to autofill certain values into certain fields.
+
 The event's target is the `document` because the Autofill implementation's notion of "form" may only loosely follow the `HTMLFormElement` association; it might for example span shadow and light DOMs or even multiple documents.
 The event does not bubble and is not cancelable.
 
-The event's `values` attribute maps each element to the autofilled value.
-It includes the value to be autofilled because other event handlers may modify `HTMLElement.value`, and because the value might not fit into the form control element.
+The event's `values` property maps each element to value to be autofilled.
+It is not guaranteed that the element actually has that value after the autofill.
+Examples where the value may differ after the autofill include:
+an event handler changes or removes the element;
+the element is an `<input maxlength=123>` and the value exceeds the maximum length;
+the element is an `<input type=color>` and the value is not a CSS color;
+the element is a `<select>` and none of its `<option>` matches the given value.
 
 The event's `triggerElement` is usually the element from which the user triggered the Autofill event.
 It is `null` if the autofill was not triggered from any `HTMLElement` in that `document`.
