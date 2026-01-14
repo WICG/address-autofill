@@ -1,4 +1,4 @@
-# Autofill Improvements
+# Autofill Event
 
 Autofill is a key feature of the web that reduces friction for millions of users everyday. It is widely used on login screens, e-commerce, and contact forms, to name a few examples. For commerce and checkout flows in particular we (Shopify) observe significant benefit from autofill to both the buyer experience and merchant outcomes:
 
