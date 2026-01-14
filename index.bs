@@ -4,7 +4,7 @@ Shortname: autofill-event
 Level: 1
 Status: CG-DRAFT
 Group: WICG
-URL: https://wicg.github.io/address-autofill/
+URL: https://wicg.github.io/autofill-event/
 Repository: WICG/address-autofill
 Editor: Yoav Weiss, Shopify https://shopify.com, yoav.weiss@shopify.com, w3cid 58673
 Abstract: This specification defines an event that fires when the user agent is about to autofill form fields, allowing developers to adapt forms dynamically based on the autofilled values.
