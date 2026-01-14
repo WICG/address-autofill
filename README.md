@@ -108,7 +108,3 @@ For example, an Autofill implementation might not support refills only for addre
 ##  2. "full-address"
 
 We are also proposing a "full-address" `autocomplete` attribute value on the form, that would enable the browser to ask permissions for the user's full address, beyond the fields that are present in the current form.
-
-# Open questions
-1. Do we need `autofill_values()`? Maybe we can pass the relevant form(s) on the event object instead?
-2. Browser extensions like password managers also offer autofill and for that they alter the DOM. How would they deal with this model?
