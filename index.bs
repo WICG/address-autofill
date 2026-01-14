@@ -1,0 +1,329 @@
+<pre class='metadata'>
+Title: Autofill Event
+Shortname: autofill-event
+Level: 1
+Status: CG-DRAFT
+Group: WICG
+URL: https://wicg.github.io/address-autofill/
+Repository: WICG/address-autofill
+Editor: Yoav Weiss, Shopify https://shopify.com, yoav.weiss@shopify.com, w3cid 58673
+Abstract: This specification defines an event that fires when the user agent is about to autofill form fields, allowing developers to adapt forms dynamically based on the autofilled values.
+Markup Shorthands: markdown yes
+</pre>
+
+<pre class='anchors'>
+urlPrefix: https://html.spec.whatwg.org/multipage/; spec: HTML
+    type: dfn
+        urlPrefix: form-control-infrastructure.html
+            text: autofill; url: #autofill
+            text: autofill field name; url: #autofill-field
+        urlPrefix: forms.html
+            text: form; url: #the-form-element
+            text: form control; url: #form-associated-element
+    type: interface
+        urlPrefix: dom.html
+            text: Document; url: #document
+    type: attribute
+        urlPrefix: form-control-infrastructure.html
+            text: autocomplete; url: #attr-fe-autocomplete
+urlPrefix: https://dom.spec.whatwg.org/; spec: DOM
+    type: interface
+        text: Event; url: #interface-event
+        text: EventTarget; url: #interface-eventtarget
+    type: dfn
+        text: dispatch; url: #concept-event-dispatch
+        text: fire an event; url: #concept-event-fire
+</pre>
+
+<pre class=link-defaults>
+spec:dom; type:interface; text:Event
+spec:html; type:dfn; text:autofill
+spec:infra; type:dfn; text:list
+spec:infra; type:dfn; text:boolean
+spec:dom; type:dfn; for:/; text:document
+</pre>
+
+# Introduction # {#intro}
+
+*This section is non-normative.*
+
+Autofill is a key feature of the web that reduces friction for millions of users everyday. 
+It is widely used on login screens, e-commerce, and contact forms, to name a few examples.
+For commerce and checkout flows in particular, autofill provides significant benefit to both 
+the buyer experience and merchant outcomes.
+
+At the same time, autofill on the web has several deficiencies: partial or incomplete fill, 
+cross-browser interoperability issues, and high cost to implement and maintain for developers.
+
+One key example is address autofill which, when implemented correctly, is a dynamic form: 
+different geographies have different shapes and requirements for address input. Selecting a 
+country requires changing the form (re-ordering fields, adding and removing fields) and depends 
+on input from the user, but [=autofill=] mediates this interaction and may not respond correctly 
+to the rendered form.
+
+The current 'industry standard' solution requires use of hidden form fields that try to anticipate 
+and capture the right information and then surface it to the user. This solution is brittle and 
+complex. Worse, it entrenches use of hidden fields to power legitimate use cases, but the same 
+technique can be and is also abused by bad actors.
+
+This specification introduces an {{AutofillEvent}} that fires before [=autofill=] values are 
+committed to form fields, allowing developers to:
+
+1. Inspect the values that are about to be autofilled
+2. Adapt the form dynamically based on those values (e.g., showing country-specific address fields)
+3. Signal to the user agent when the form is ready to accept the autofill values
+
+## Goals ## {#goals}
+
+* **Users**: Make autofill more reliable and pave the path for potential future deprecation of filling hidden fields
+* **Site developers**: Reduce complexity required to tackle address autofill using hidden fields, and reduce the need for implementation-specific hacks.
+* **Autofill providers**: Give third-party autofill providers hooks that work seamlessly with the new API
+
+## Example ## {#example}
+
+<div class="example">
+A checkout form that dynamically adds country-specific address fields based on the autofilled country value:
+
+```html
+<form id="checkout">
+  <input autocomplete="name" placeholder="Full name">
+  <input autocomplete="street-address" placeholder="Street address">
+  <input autocomplete="address-level2" placeholder="City">
+  <input autocomplete="postal-code" placeholder="Postal code">
+  <input autocomplete="country" placeholder="Country">
+  <!-- State/province field will be added dynamically for countries that need it -->
+</form>
+
+<script>
+document.addEventListener('autofill', async function(event) {
+  // Find the country value in the autofill values
+  let countryValue = null;
+  let formElement = null;
+  
+  // Find the country element and value
+  for (const [element, value] of event.values) {
+    if (element.autocomplete === 'country') {
+      countryValue = value;
+      formElement = element.form;
+      break;
+    }
+  }
+  
+  // If filling a US address, we need to add a state selector
+  if (event.refill !== null) {
+    if (countryValue === 'US') {
+        // Check if we already have a state field
+        const existingState = formElement.querySelector('[autocomplete="address-level1"]');
+        if (!existingState) {
+        // Create and insert a state selector for US addresses
+        const stateSelect = document.createElement('select');
+        stateSelect.autocomplete = 'address-level1';
+        stateSelect.name = 'state';
+        stateSelect.innerHTML = `
+            <option value="">Select state...</option>
+            <option value="AL">Alabama</option>
+            <option value="AK">Alaska</option>
+            <option value="AZ">Arizona</option>
+            <option value="CA">California</option>
+            <option value="CO">Colorado</option>
+            <!-- ... other states ... -->
+            <option value="WY">Wyoming</option>
+        `;
+        
+        // Insert before the postal code field
+        const postalCode = formElement.querySelector('[autocomplete="postal-code"]');
+        postalCode.parentNode.insertBefore(stateSelect, postalCode);
+        
+        // Signal that the form has been modified and autofill should be refilled
+        await event.refill();
+        }
+    } else if (countryValue === 'UK') {
+        ... Add UK-specific logic
+    }
+  } else {
+    // The UA doesn't support refilling. Extract values from hidden fields,
+    // or notify the user they need to complete values manually.
+  }
+});
+</script>
+```
+
+The {{AutofillEvent/values}} attribute returns a list of [=autofill value entries=], where each 
+entry is a tuple of the target {{HTMLElement}} and the value to be filled. The developer can 
+iterate over these entries to inspect the pending autofill data and determine if the form needs 
+to be adapted.
+
+Once the form structure was changed (e.g., to add country-specific fields, potentially asynchronously),
+the developer calls {{AutofillEvent/refill}}. This signals to the user agent that the form has been
+modified and that it should retry the autofill operation with the updated form structure.
+
+Note: The {{AutofillEvent/refill}} attribute is `null` on the second dispatch of the event 
+(after form modifications), preventing infinite loops.
+</div>
+
+# Concepts # {#concepts}
+
+## Autofill Value Entries ## {#autofill-values-concept}
+
+An <dfn>autofill value entry</dfn> is a tuple consisting of:
+1. An {{HTMLElement}} — the [=form control=] that will receive the autofilled value
+2. A {{DOMString}} — the value from the user's autofill profile to be filled
+
+The user agent matches form controls to autofill data based on the control's 
+{{autocomplete}} attribute (see [=autofill field name=] in [[HTML]]).
+It may also use [=implementation-defined=] heuristics.
+
+## Refill Operation ## {#refill-concept}
+
+A <dfn export>refill operation</dfn> allows the developer to signal that the form structure was 
+modified in response to the autofill values, and that the user agent should attempt to fill
+the form again.
+
+# The AutofillEvent Interface # {#autofill-event-interface}
+
+<pre class="idl">
+[Exposed=Window]
+interface AutofillEvent : Event {
+  constructor(DOMString type, optional AutofillEventInit eventInitDict = {});
+  readonly attribute FrozenArray&lt;AutofillValueEntry&gt; values;
+  readonly attribute RefillCallback? refill;
+};
+
+callback RefillCallback = Promise&lt;undefined&gt; ();
+
+dictionary AutofillEventInit : EventInit {
+  sequence&lt;AutofillValueEntry&gt; values = [];
+  boolean allowRefill = true;
+};
+
+typedef sequence&lt;any&gt; AutofillValueEntry;
+// AutofillValueEntry is a tuple of [HTMLElement, DOMString]
+// where the first element is the form control and the second is the value to fill
+</pre>
+
+The {{AutofillEvent}} interface represents an event that is [=dispatch|dispatched=] when the 
+user agent is about to [=autofill=] form fields.
+
+## Attributes ## {#autofill-event-attributes}
+
+The <dfn attribute for=AutofillEvent>values</dfn> attribute returns a list of 
+[=autofill value entries=]. Each entry is a tuple where the first element is an {{HTMLElement}} 
+(the form control to be filled) and the second element is a {{DOMString}} (the value to fill).
+
+The <dfn attribute for=AutofillEvent>refill</dfn> attribute returns a {{RefillCallback}} or 
+`null`. When not `null`, calling this callback returns a {{Promise}} that, when awaited, signals 
+to the user agent that the form structure has been modified and autofill should be retried.
+
+The {{AutofillEvent/refill}} attribute is `null` when:
+* The event is dispatched as a retry after a previous call to {{AutofillEvent/refill}}, or
+* The user agent determines that refilling is not appropriate for this autofill operation.
+
+This prevents infinite loops where a page continuously modifies the form and requests refills.
+
+Each {{AutofillEvent}} has an associated <dfn for=AutofillEvent>values list</dfn> 
+(a [=list=] of [=autofill value entries=]), initially an empty [=list=].
+
+Each {{AutofillEvent}} has an associated <dfn for=AutofillEvent>allow refill flag</dfn> 
+(a [=boolean=]), initially true.
+
+Each {{AutofillEvent}} has an associated <dfn for=AutofillEvent>dispatch timestamp</dfn> 
+(a {{DOMHighResTimeStamp}}), initially 0.
+
+Each {{AutofillEvent}} has an associated <dfn for=AutofillEvent>refill pending flag</dfn> 
+(a [=boolean=]), initially false.
+
+# Processing Model # {#processing-model}
+
+## Firing the Autofill Event ## {#firing-autofill-event}
+
+<div algorithm>
+To <dfn>fire an autofill event</dfn> given a [=document=] |document|, a [=list=] of [=autofill value entries=] |entries|, and a [=boolean=] |allowRefill|:
+
+1. Let |event| be the result of [=creating an event=] using {{AutofillEvent}}.
+1. Initialize |event|'s {{Event/type}} attribute to "<code>autofill</code>".
+1. Initialize |event|'s {{Event/bubbles}} attribute to true.
+1. Initialize |event|'s {{Event/cancelable}} attribute to false.
+1. Set |event|'s [=AutofillEvent/values list=] to |entries|.
+1. Set |event|'s [=AutofillEvent/allow refill flag=] to |allowRefill|.
+1. Set |event|'s [=AutofillEvent/dispatch timestamp=] to the [=current high resolution time=].
+1. [=Dispatch=] |event| at |document|.
+1. Perform the [=autofill=] operation on |document| with |entries|.
+
+</div>
+
+Note: The autofill operation is performed immediately after the event is dispatched. The 
+{{AutofillEvent/refill}} callback allows the page to request an additional autofill pass 
+after modifying the form structure, within an [=implementation-defined=] timeout window.
+
+## Processing a Refill Request ## {#processing-refill}
+
+<div algorithm="process a refill request">
+To <dfn export>process a refill request</dfn> given an {{AutofillEvent}} |event|:
+
+1. Let |now| be the [=current high resolution time=].
+1. Let |elapsed| be |now| minus |event|'s [=AutofillEvent/dispatch timestamp=].
+1. Let |refillTimeout| be an [=implementation-defined=] duration.
+1. If |elapsed| is greater than |refillTimeout|, return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
+1. If |event|'s [=AutofillEvent/allow refill flag=] is false, return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
+1. If |event|'s [=AutofillEvent/refill pending flag=] is true, return [=a promise rejected with=] an "{{InvalidStateError}}" {{DOMException}}.
+1. Set |event|'s [=AutofillEvent/refill pending flag=] to true.
+1. Let |promise| be [=a new promise=].
+1. Let |document| be |event|'s relevant [=document=].
+1. Return |promise| and [=in parallel=]:
+    1. Let |entries| be the updated [=autofill value entries=] (re-matching the user's autofill data against the modified form).
+    1. [=Queue a task=] to:
+        1. [=Fire an autofill event=] with |document|, |entries|, and false.
+        1. Perform the [=autofill=] operation on |document| with |entries|.
+        1. [=Resolve=] |promise| with undefined.
+
+</div>
+
+Note: The timeout is [=implementation-defined=] to allow user agents flexibility in balancing 
+responsiveness with giving pages adequate time to call {{AutofillEvent/refill}}. User agents 
+SHOULD choose a timeout that provides a good user experience.
+
+Note: On the retry dispatch (after {{AutofillEvent/refill}} was called), the 
+{{AutofillEvent/refill}} attribute is `null`, preventing infinite loops.
+
+## Integration with HTML Autofill ## {#html-integration}
+
+When a user agent's [=autofill=] mechanism is triggered (e.g., by user interaction with an 
+autofill UI), and the user selects values to fill, the user agent MUST [=fire an autofill event=] 
+before committing those values to form fields.
+
+# The "full-address" Autocomplete Token # {#full-address}
+
+This specification introduces a new [=autofill field name=]: "<dfn attr-value for=autocomplete>full-address</dfn>".
+
+When a [=form control=] has the {{autocomplete}} attribute set to "<code>full-address</code>", 
+the user agent SHOULD request permission to access the user's complete address data, including 
+fields that may not be present in the current form.
+
+This enables forms to receive comprehensive address information via the {{AutofillEvent}}, 
+allowing them to dynamically adapt their structure to accommodate all relevant fields for the 
+user's address.
+
+<div class="example">
+Using `full-address` to enable comprehensive address autofill:
+
+```html
+<form autocomplete="full-address">
+  <input name="country" autocomplete="country">
+  <div id="dynamic-address-fields"></div>
+</form>
+```
+</div>
+
+# Security and Privacy Considerations # {#security-privacy}
+
+## Timing Attacks ## {#timing-attacks}
+
+The {{AutofillEvent}} exposes autofill values to JavaScript before they are committed to form 
+fields. User agents SHOULD ensure that the event is only fired after explicit user consent to 
+autofill has been given (e.g., by selecting an autofill suggestion from a dropdown).
+
+## Third-Party Autofill Providers ## {#third-party-providers}
+
+Browser extensions and third-party autofill providers (such as password managers) can 
+utilize this API by constructing and dispatching {{AutofillEvent}}s with the same structure, 
+ensuring consistent behavior regardless of the autofill source.
