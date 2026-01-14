@@ -109,13 +109,6 @@ For example, an Autofill implementation might not support refills only for addre
 
 We are also proposing a "full-address" `autocomplete` attribute value on the form, that would enable the browser to ask permissions for the user's full address, beyond the fields that are present in the current form.
 
-##  3. Deprecate auto-filling of hidden fields
-With the above steps in place we pave the way to change the default to stop autofill of hidden fields. This behavior was suggested in [W3C fork of the spec](https://github.com/w3c/html/blob/master/sections/semantics-forms.include#L10764-L10779) but has never made it into the official specification. Practically, such a process would likely require.. 
-
-1. User preference: allow users to toggle behavior on/off, as a privacy enhancement.
-2. Site Opt-in period: allow sites to signal and opt-out from hidden fields autofill 
-3. Deprecation period: gradually change behavior to default-off.
-
 # Open questions
 1. Do we need `autofill_values()`? Maybe we can pass the relevant form(s) on the event object instead?
 2. Browser extensions like password managers also offer autofill and for that they alter the DOM. How would they deal with this model?
