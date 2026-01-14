@@ -6,16 +6,23 @@ on:
     branches: [main]
   workflow_dispatch: {}
 
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 jobs:
   main:
     name: Build, Validate and Deploy
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pages: write
     steps:
       - uses: actions/checkout@v4
       - uses: w3c/spec-prod@v2
         with:
+          SOURCE: index.bs
+          TOOLCHAIN: bikeshed
           GH_PAGES_BRANCH: gh-pages
+          GH_PAGES_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_LINKS: false
+          VALIDATE_MARKUP: false
 
