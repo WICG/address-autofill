@@ -7,13 +7,17 @@ on:
   workflow_dispatch: {}
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
-  main:
-    name: Build, Validate and Deploy
+  build:
+    name: Build Spec
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,8 +25,23 @@ jobs:
         with:
           SOURCE: index.bs
           TOOLCHAIN: bikeshed
-          GH_PAGES_BRANCH: gh-pages
-          GH_PAGES_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_LINKS: false
           VALIDATE_MARKUP: false
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./
+
+  deploy:
+    name: Deploy to GitHub Pages
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
 
