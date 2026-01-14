@@ -488,4 +488,3 @@ autofill has been given (e.g., by selecting an autofill suggestion from a dropdo
 Browser extensions and third-party autofill providers (such as password managers) can 
 utilize this API by constructing and dispatching {{AutofillEvent}}s with the same structure, 
 ensuring consistent behavior regardless of the autofill source.
-
