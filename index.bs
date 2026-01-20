@@ -11,16 +11,6 @@ Abstract: This specification defines an event that fires when the user agent is 
 Markup Shorthands: markdown yes
 </pre>
 
-<pre class="biblio">
-{
-  "WEBDRIVER-BIDI": {
-    "href": "https://w3c.github.io/webdriver-bidi/",
-    "title": "WebDriver BiDi",
-    "publisher": "W3C"
-  }
-}
-</pre>
-
 <pre class='anchors'>
 urlPrefix: https://html.spec.whatwg.org/multipage/; spec: HTML
     type: dfn
@@ -111,7 +101,7 @@ document.addEventListener('autofill', async function(event) {
   let formElement = null;
   
   // Find the country element and value
-  for (const [element, value] of event.values) {
+  for (const [element, value] of event.autofillValues) {
     if (element.autocomplete === 'country') {
       countryValue = value;
       formElement = element.form;
@@ -158,7 +148,7 @@ document.addEventListener('autofill', async function(event) {
 </script>
 ```
 
-The {{AutofillEvent/values}} attribute returns a list of [=autofill value entries=], where each 
+The {{AutofillEvent/autofillValues}} attribute returns a list of [=autofill value entries=], where each 
 entry is a tuple of the target {{HTMLElement}} and the value to be filled. The developer can 
 iterate over these entries to inspect the pending autofill data and determine if the form needs 
 to be adapted.
@@ -195,14 +185,14 @@ the form again.
 [Exposed=Window]
 interface AutofillEvent : Event {
   constructor(DOMString type, optional AutofillEventInit eventInitDict = {});
-  readonly attribute FrozenArray&lt;AutofillValueEntry&gt; values;
+  readonly attribute FrozenArray&lt;AutofillValueEntry&gt; autofillValues;
   readonly attribute RefillCallback? refill;
 };
 
 callback RefillCallback = Promise&lt;undefined&gt; ();
 
 dictionary AutofillEventInit : EventInit {
-  sequence&lt;AutofillValueEntry&gt; values = [];
+  sequence&lt;AutofillValueEntry&gt; autofillValues = [];
   boolean allowRefill = true;
 };
 
@@ -216,7 +206,7 @@ user agent is about to [=autofill=] form fields.
 
 ## Attributes ## {#autofill-event-attributes}
 
-The <dfn attribute for=AutofillEvent>values</dfn> attribute returns a list of 
+The <dfn attribute for=AutofillEvent>autofillValues</dfn> attribute returns a list of 
 [=autofill value entries=]. Each entry is a tuple where the first element is an {{HTMLElement}} 
 (the form control to be filled) and the second element is a {{DOMString}} (the value to fill).
 
@@ -230,7 +220,7 @@ The {{AutofillEvent/refill}} attribute is `null` when:
 
 This prevents infinite loops where a page continuously modifies the form and requests refills.
 
-Each {{AutofillEvent}} has an associated <dfn for=AutofillEvent>values list</dfn> 
+Each {{AutofillEvent}} has an associated <dfn for=AutofillEvent>autofill values list</dfn> 
 (a [=list=] of [=autofill value entries=]), initially an empty [=list=].
 
 Each {{AutofillEvent}} has an associated <dfn for=AutofillEvent>allow refill flag</dfn> 
@@ -253,7 +243,7 @@ To <dfn>fire an autofill event</dfn> given a [=document=] |document|, a [=list=]
 1. Initialize |event|'s {{Event/type}} attribute to "<code>autofill</code>".
 1. Initialize |event|'s {{Event/bubbles}} attribute to true.
 1. Initialize |event|'s {{Event/cancelable}} attribute to false.
-1. Set |event|'s [=AutofillEvent/values list=] to |entries|.
+1. Set |event|'s [=AutofillEvent/autofill values list=] to |entries|.
 1. Set |event|'s [=AutofillEvent/allow refill flag=] to |allowRefill|.
 1. Set |event|'s [=AutofillEvent/dispatch timestamp=] to the [=current high resolution time=].
 1. [=Dispatch=] |event| at |document|.
