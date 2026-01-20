@@ -6,7 +6,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/cg-draft" rel="stylesheet">
   <meta content="Bikeshed version 3c53a5b02, updated Thu Nov 27 17:03:30 2025 +0000" name="generator">
   <link href="https://wicg.github.io/autofill-event/" rel="canonical">
-  <meta content="d376fdbc0727ed2de6c10bf528a7ce2accc2e1d4" name="revision">
+  <meta content="c1d18cab1517f141aaf7f6f2de56870426ec146c" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -866,8 +866,8 @@ committed to form fields, allowing developers to:</p>
      <p><strong>Autofill providers</strong>: Give third-party autofill providers hooks that work seamlessly with the new API</p>
    </ul>
    <h3 class="heading settled" data-level="1.2" id="example"><span class="secno">1.2. </span><span class="content">Example</span><a class="self-link" href="#example"></a></h3>
-   <div class="example" id="example-295b1080">
-    <a class="self-link" href="#example-295b1080"></a>
+   <div class="example" id="example-b64dec34">
+    <a class="self-link" href="#example-b64dec34"></a>
 A checkout form that dynamically adds country-specific address fields based on the autofilled country value:
 
 
@@ -887,7 +887,7 @@ document<c- p>.</c->addEventListener<c- p>(</c-><c- t>'autofill'</c-><c- p>,</c-
   <c- a>let</c-> formElement <c- o>=</c-> <c- kc>null</c-><c- p>;</c->
   
   <c- c1>// Find the country element and value</c->
-  <c- k>for</c-> <c- p>(</c-><c- a>const</c-> <c- p>[</c->element<c- p>,</c-> value<c- p>]</c-> <c- k>of</c-> event<c- p>.</c->values<c- p>)</c-> <c- p>{</c->
+  <c- k>for</c-> <c- p>(</c-><c- a>const</c-> <c- p>[</c->element<c- p>,</c-> value<c- p>]</c-> <c- k>of</c-> event<c- p>.</c->autofillValues<c- p>)</c-> <c- p>{</c->
     <c- k>if</c-> <c- p>(</c->element<c- p>.</c->autocomplete <c- o>===</c-> <c- t>'country'</c-><c- p>)</c-> <c- p>{</c->
       countryValue <c- o>=</c-> value<c- p>;</c->
       formElement <c- o>=</c-> element<c- p>.</c->form<c- p>;</c->
@@ -933,7 +933,7 @@ document<c- p>.</c->addEventListener<c- p>(</c-><c- t>'autofill'</c-><c- p>,</c-
 <c- p>});</c->
 <c- p>&lt;/</c-><c- f>script</c-><c- p>></c->
 </pre>
-    <p>The <code class="idl"><a data-link-type="idl" href="#dom-autofillevent-values" id="ref-for-dom-autofillevent-values">values</a></code> attribute returns a list of <a data-link-type="dfn" href="#autofill-value-entry" id="ref-for-autofill-value-entry">autofill value entries</a>, where each
+    <p>The <code class="idl"><a data-link-type="idl" href="#dom-autofillevent-autofillvalues" id="ref-for-dom-autofillevent-autofillvalues">autofillValues</a></code> attribute returns a list of <a data-link-type="dfn" href="#autofill-value-entry" id="ref-for-autofill-value-entry">autofill value entries</a>, where each
 entry is a tuple of the target <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/dom.html#htmlelement" id="ref-for-htmlelement">HTMLElement</a></code> and the value to be filled. The developer can 
 iterate over these entries to inspect the pending autofill data and determine if the form needs 
 to be adapted.</p>
@@ -963,14 +963,14 @@ the form again.</p>
 <pre class="def highlight idl">[<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#Exposed" id="ref-for-Exposed"><c- g>Exposed</c-></a>=<c- n>Window</c->]
 <c- b>interface</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export id="autofillevent"><code><c- g>AutofillEvent</c-></code></dfn> : <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#interface-event" id="ref-for-interface-event"><c- n>Event</c-></a> {
   <dfn class="dfn-paneled idl-code" data-dfn-for="AutofillEvent" data-dfn-type="constructor" data-export data-lt="AutofillEvent(type, eventInitDict)|constructor(type, eventInitDict)|AutofillEvent(type)|constructor(type)" id="dom-autofillevent-autofillevent"><code><c- g>constructor</c-></code></dfn>(<a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString①"><c- b>DOMString</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="AutofillEvent/AutofillEvent(type, eventInitDict), AutofillEvent/constructor(type, eventInitDict), AutofillEvent/AutofillEvent(type), AutofillEvent/constructor(type)" data-dfn-type="argument" data-export id="dom-autofillevent-autofillevent-type-eventinitdict-type"><code><c- g>type</c-></code></dfn>, <c- b>optional</c-> <a data-link-type="idl-name" href="#dictdef-autofilleventinit" id="ref-for-dictdef-autofilleventinit"><c- n>AutofillEventInit</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="AutofillEvent/AutofillEvent(type, eventInitDict), AutofillEvent/constructor(type, eventInitDict), AutofillEvent/AutofillEvent(type), AutofillEvent/constructor(type)" data-dfn-type="argument" data-export id="dom-autofillevent-autofillevent-type-eventinitdict-eventinitdict"><code><c- g>eventInitDict</c-></code></dfn> = {});
-  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-frozen-array" id="ref-for-idl-frozen-array"><c- b>FrozenArray</c-></a>&lt;<a data-link-type="idl-name" href="#typedefdef-autofillvalueentry" id="ref-for-typedefdef-autofillvalueentry"><c- n>AutofillValueEntry</c-></a>> <a class="idl-code" data-link-type="attribute" data-readonly data-type="FrozenArray<AutofillValueEntry>" href="#dom-autofillevent-values" id="ref-for-dom-autofillevent-values①"><c- g>values</c-></a>;
+  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-frozen-array" id="ref-for-idl-frozen-array"><c- b>FrozenArray</c-></a>&lt;<a data-link-type="idl-name" href="#typedefdef-autofillvalueentry" id="ref-for-typedefdef-autofillvalueentry"><c- n>AutofillValueEntry</c-></a>> <a class="idl-code" data-link-type="attribute" data-readonly data-type="FrozenArray<AutofillValueEntry>" href="#dom-autofillevent-autofillvalues" id="ref-for-dom-autofillevent-autofillvalues①"><c- g>autofillValues</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#callbackdef-refillcallback" id="ref-for-callbackdef-refillcallback"><c- n>RefillCallback</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="RefillCallback?" href="#dom-autofillevent-refill" id="ref-for-dom-autofillevent-refill②"><c- g>refill</c-></a>;
 };
 
 <c- b>callback</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="callback" data-export id="callbackdef-refillcallback"><code><c- g>RefillCallback</c-></code></dfn> = <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-promise" id="ref-for-idl-promise"><c- b>Promise</c-></a>&lt;<a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-undefined" id="ref-for-idl-undefined"><c- b>undefined</c-></a>> ();
 
 <c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-autofilleventinit"><code><c- g>AutofillEventInit</c-></code></dfn> : <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#dictdef-eventinit" id="ref-for-dictdef-eventinit"><c- n>EventInit</c-></a> {
-  <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#idl-sequence" id="ref-for-idl-sequence"><c- b>sequence</c-></a>&lt;<a data-link-type="idl-name" href="#typedefdef-autofillvalueentry" id="ref-for-typedefdef-autofillvalueentry①"><c- n>AutofillValueEntry</c-></a>> <dfn class="dfn-paneled idl-code" data-default="[]" data-dfn-for="AutofillEventInit" data-dfn-type="dict-member" data-export data-type="sequence<AutofillValueEntry>" id="dom-autofilleventinit-values"><code><c- g>values</c-></code></dfn> = [];
+  <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#idl-sequence" id="ref-for-idl-sequence"><c- b>sequence</c-></a>&lt;<a data-link-type="idl-name" href="#typedefdef-autofillvalueentry" id="ref-for-typedefdef-autofillvalueentry①"><c- n>AutofillValueEntry</c-></a>> <dfn class="dfn-paneled idl-code" data-default="[]" data-dfn-for="AutofillEventInit" data-dfn-type="dict-member" data-export data-type="sequence<AutofillValueEntry>" id="dom-autofilleventinit-autofillvalues"><code><c- g>autofillValues</c-></code></dfn> = [];
   <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-boolean" id="ref-for-idl-boolean"><c- b>boolean</c-></a> <dfn class="dfn-paneled idl-code" data-default="true" data-dfn-for="AutofillEventInit" data-dfn-type="dict-member" data-export data-type="boolean" id="dom-autofilleventinit-allowrefill"><code><c- g>allowRefill</c-></code></dfn> = <c- b>true</c->;
 };
 
@@ -981,7 +981,7 @@ the form again.</p>
    <p>The <code class="idl"><a data-link-type="idl" href="#autofillevent" id="ref-for-autofillevent①">AutofillEvent</a></code> interface represents an event that is <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event-dispatch" id="ref-for-concept-event-dispatch">dispatched</a> when the
 user agent is about to <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill" id="ref-for-autofill②">autofill</a> form fields.</p>
    <h3 class="heading settled" data-level="3.1" id="autofill-event-attributes"><span class="secno">3.1. </span><span class="content">Attributes</span><a class="self-link" href="#autofill-event-attributes"></a></h3>
-   <p>The <dfn class="dfn-paneled idl-code" data-dfn-for="AutofillEvent" data-dfn-type="attribute" data-export id="dom-autofillevent-values"><code>values</code></dfn> attribute returns a list of
+   <p>The <dfn class="dfn-paneled idl-code" data-dfn-for="AutofillEvent" data-dfn-type="attribute" data-export id="dom-autofillevent-autofillvalues"><code>autofillValues</code></dfn> attribute returns a list of
 <a data-link-type="dfn" href="#autofill-value-entry" id="ref-for-autofill-value-entry①">autofill value entries</a>. Each entry is a tuple where the first element is an <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/dom.html#htmlelement" id="ref-for-htmlelement②">HTMLElement</a></code> 
 (the form control to be filled) and the second element is a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString②">DOMString</a></code> (the value to fill).</p>
    <p>The <dfn class="dfn-paneled idl-code" data-dfn-for="AutofillEvent" data-dfn-type="attribute" data-export id="dom-autofillevent-refill"><code>refill</code></dfn> attribute returns a <code class="idl"><a data-link-type="idl" href="#callbackdef-refillcallback" id="ref-for-callbackdef-refillcallback①">RefillCallback</a></code> or
@@ -995,7 +995,7 @@ to the user agent that the form structure has been modified and autofill should 
      <p>The user agent determines that refilling is not appropriate for this autofill operation.</p>
    </ul>
    <p>This prevents infinite loops where a page continuously modifies the form and requests refills.</p>
-   <p>Each <code class="idl"><a data-link-type="idl" href="#autofillevent" id="ref-for-autofillevent②">AutofillEvent</a></code> has an associated <dfn class="dfn-paneled" data-dfn-for="AutofillEvent" data-dfn-type="dfn" data-noexport id="autofillevent-values-list">values list</dfn>
+   <p>Each <code class="idl"><a data-link-type="idl" href="#autofillevent" id="ref-for-autofillevent②">AutofillEvent</a></code> has an associated <dfn class="dfn-paneled" data-dfn-for="AutofillEvent" data-dfn-type="dfn" data-noexport id="autofillevent-autofill-values-list">autofill values list</dfn>
 (a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list">list</a> of <a data-link-type="dfn" href="#autofill-value-entry" id="ref-for-autofill-value-entry②">autofill value entries</a>), initially an empty <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①">list</a>.</p>
    <p>Each <code class="idl"><a data-link-type="idl" href="#autofillevent" id="ref-for-autofillevent③">AutofillEvent</a></code> has an associated <dfn class="dfn-paneled" data-dfn-for="AutofillEvent" data-dfn-type="dfn" data-noexport id="autofillevent-allow-refill-flag">allow refill flag</dfn>
 (a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#boolean" id="ref-for-boolean">boolean</a>), initially true.</p>
@@ -1020,7 +1020,7 @@ To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="fire-an-autofi
      <li data-md>
       <p>Initialize <var>event</var>’s <code class="idl"><a data-link-type="idl" href="https://dom.spec.whatwg.org/#dom-event-cancelable" id="ref-for-dom-event-cancelable">cancelable</a></code> attribute to false.</p>
      <li data-md>
-      <p>Set <var>event</var>’s <a data-link-type="dfn" href="#autofillevent-values-list" id="ref-for-autofillevent-values-list">values list</a> to <var>entries</var>.</p>
+      <p>Set <var>event</var>’s <a data-link-type="dfn" href="#autofillevent-autofill-values-list" id="ref-for-autofillevent-autofill-values-list">autofill values list</a> to <var>entries</var>.</p>
      <li data-md>
       <p>Set <var>event</var>’s <a data-link-type="dfn" href="#autofillevent-allow-refill-flag" id="ref-for-autofillevent-allow-refill-flag">allow refill flag</a> to <var>allowRefill</var>.</p>
      <li data-md>
@@ -1164,6 +1164,13 @@ ensuring consistent behavior regardless of the autofill source.</p>
    <li><a href="#dom-autofillevent-autofillevent">AutofillEvent(type, eventInitDict)</a><span>, in § 3</span>
    <li><a href="#autofill-value-entry">autofill value entry</a><span>, in § 2.1</span>
    <li><a href="#typedefdef-autofillvalueentry">AutofillValueEntry</a><span>, in § 3</span>
+   <li>
+    autofillValues
+    <ul>
+     <li><a href="#dom-autofillevent-autofillvalues">attribute for AutofillEvent</a><span>, in § 3.1</span>
+     <li><a href="#dom-autofilleventinit-autofillvalues">dict-member for AutofillEventInit</a><span>, in § 3</span>
+    </ul>
+   <li><a href="#autofillevent-autofill-values-list">autofill values list</a><span>, in § 3.1</span>
    <li><a href="#dom-autofillevent-autofillevent">constructor(type)</a><span>, in § 3</span>
    <li><a href="#dom-autofillevent-autofillevent">constructor(type, eventInitDict)</a><span>, in § 3</span>
    <li><a href="#autofillevent-dispatch-timestamp">dispatch timestamp</a><span>, in § 3.1</span>
@@ -1174,13 +1181,6 @@ ensuring consistent behavior regardless of the autofill source.</p>
    <li><a href="#callbackdef-refillcallback">RefillCallback</a><span>, in § 3</span>
    <li><a href="#refill-operation">refill operation</a><span>, in § 2.2</span>
    <li><a href="#autofillevent-refill-pending-flag">refill pending flag</a><span>, in § 3.1</span>
-   <li>
-    values
-    <ul>
-     <li><a href="#dom-autofillevent-values">attribute for AutofillEvent</a><span>, in § 3.1</span>
-     <li><a href="#dom-autofilleventinit-values">dict-member for AutofillEventInit</a><span>, in § 3</span>
-    </ul>
-   <li><a href="#autofillevent-values-list">values list</a><span>, in § 3.1</span>
   </ul>
   <h3 class="heading no-num no-ref settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
   <ul class="index">
@@ -1258,14 +1258,14 @@ ensuring consistent behavior regardless of the autofill source.</p>
 <pre class="def highlight idl">[<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#Exposed"><c- g>Exposed</c-></a>=<c- n>Window</c->]
 <c- b>interface</c-> <a href="#autofillevent"><code><c- g>AutofillEvent</c-></code></a> : <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#interface-event"><c- n>Event</c-></a> {
   <a href="#dom-autofillevent-autofillevent"><code><c- g>constructor</c-></code></a>(<a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString"><c- b>DOMString</c-></a> <a href="#dom-autofillevent-autofillevent-type-eventinitdict-type"><code><c- g>type</c-></code></a>, <c- b>optional</c-> <a data-link-type="idl-name" href="#dictdef-autofilleventinit"><c- n>AutofillEventInit</c-></a> <a href="#dom-autofillevent-autofillevent-type-eventinitdict-eventinitdict"><code><c- g>eventInitDict</c-></code></a> = {});
-  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-frozen-array"><c- b>FrozenArray</c-></a>&lt;<a data-link-type="idl-name" href="#typedefdef-autofillvalueentry"><c- n>AutofillValueEntry</c-></a>> <a class="idl-code" data-link-type="attribute" data-readonly data-type="FrozenArray<AutofillValueEntry>" href="#dom-autofillevent-values"><c- g>values</c-></a>;
+  <c- b>readonly</c-> <c- b>attribute</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-frozen-array"><c- b>FrozenArray</c-></a>&lt;<a data-link-type="idl-name" href="#typedefdef-autofillvalueentry"><c- n>AutofillValueEntry</c-></a>> <a class="idl-code" data-link-type="attribute" data-readonly data-type="FrozenArray<AutofillValueEntry>" href="#dom-autofillevent-autofillvalues"><c- g>autofillValues</c-></a>;
   <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#callbackdef-refillcallback"><c- n>RefillCallback</c-></a>? <a class="idl-code" data-link-type="attribute" data-readonly data-type="RefillCallback?" href="#dom-autofillevent-refill"><c- g>refill</c-></a>;
 };
 
 <c- b>callback</c-> <a href="#callbackdef-refillcallback"><code><c- g>RefillCallback</c-></code></a> = <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-promise"><c- b>Promise</c-></a>&lt;<a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-undefined"><c- b>undefined</c-></a>> ();
 
 <c- b>dictionary</c-> <a href="#dictdef-autofilleventinit"><code><c- g>AutofillEventInit</c-></code></a> : <a data-link-type="idl-name" href="https://dom.spec.whatwg.org/#dictdef-eventinit"><c- n>EventInit</c-></a> {
-  <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#idl-sequence"><c- b>sequence</c-></a>&lt;<a data-link-type="idl-name" href="#typedefdef-autofillvalueentry"><c- n>AutofillValueEntry</c-></a>> <a data-default="[]" data-type="sequence<AutofillValueEntry>" href="#dom-autofilleventinit-values"><code><c- g>values</c-></code></a> = [];
+  <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#idl-sequence"><c- b>sequence</c-></a>&lt;<a data-link-type="idl-name" href="#typedefdef-autofillvalueentry"><c- n>AutofillValueEntry</c-></a>> <a data-default="[]" data-type="sequence<AutofillValueEntry>" href="#dom-autofilleventinit-autofillvalues"><code><c- g>autofillValues</c-></code></a> = [];
   <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-boolean"><c- b>boolean</c-></a> <a data-default="true" data-type="boolean" href="#dom-autofilleventinit-allowrefill"><code><c- g>allowRefill</c-></code></a> = <c- b>true</c->;
 };
 
@@ -1503,9 +1503,9 @@ let dfnPanelData = {
 "autofill-value-entry": {"dfnID":"autofill-value-entry","dfnText":"autofill value entry","external":false,"refSections":[{"refs":[{"id":"ref-for-autofill-value-entry"}],"title":"1.2. Example"},{"refs":[{"id":"ref-for-autofill-value-entry\u2460"},{"id":"ref-for-autofill-value-entry\u2461"}],"title":"3.1. Attributes"},{"refs":[{"id":"ref-for-autofill-value-entry\u2462"}],"title":"4.1. Firing the Autofill Event"},{"refs":[{"id":"ref-for-autofill-value-entry\u2463"}],"title":"4.2. Processing a Refill Request"}],"url":"#autofill-value-entry"},
 "autofillevent": {"dfnID":"autofillevent","dfnText":"AutofillEvent","external":false,"refSections":[{"refs":[{"id":"ref-for-autofillevent"}],"title":"1. Introduction"},{"refs":[{"id":"ref-for-autofillevent\u2460"}],"title":"3. The AutofillEvent Interface"},{"refs":[{"id":"ref-for-autofillevent\u2461"},{"id":"ref-for-autofillevent\u2462"},{"id":"ref-for-autofillevent\u2463"},{"id":"ref-for-autofillevent\u2464"}],"title":"3.1. Attributes"},{"refs":[{"id":"ref-for-autofillevent\u2465"}],"title":"4.1. Firing the Autofill Event"},{"refs":[{"id":"ref-for-autofillevent\u2466"}],"title":"4.2. Processing a Refill Request"},{"refs":[{"id":"ref-for-autofillevent\u2467"}],"title":"5. The \"full-address\" Autocomplete Token"},{"refs":[{"id":"ref-for-autofillevent\u2468"}],"title":"6.1. Timing Attacks"},{"refs":[{"id":"ref-for-autofillevent\u2460\u24ea"}],"title":"6.2. Third-Party Autofill Providers"}],"url":"#autofillevent"},
 "autofillevent-allow-refill-flag": {"dfnID":"autofillevent-allow-refill-flag","dfnText":"allow refill flag","external":false,"refSections":[{"refs":[{"id":"ref-for-autofillevent-allow-refill-flag"}],"title":"4.1. Firing the Autofill Event"},{"refs":[{"id":"ref-for-autofillevent-allow-refill-flag\u2460"}],"title":"4.2. Processing a Refill Request"}],"url":"#autofillevent-allow-refill-flag"},
+"autofillevent-autofill-values-list": {"dfnID":"autofillevent-autofill-values-list","dfnText":"autofill values list","external":false,"refSections":[{"refs":[{"id":"ref-for-autofillevent-autofill-values-list"}],"title":"4.1. Firing the Autofill Event"}],"url":"#autofillevent-autofill-values-list"},
 "autofillevent-dispatch-timestamp": {"dfnID":"autofillevent-dispatch-timestamp","dfnText":"dispatch timestamp","external":false,"refSections":[{"refs":[{"id":"ref-for-autofillevent-dispatch-timestamp"}],"title":"4.1. Firing the Autofill Event"},{"refs":[{"id":"ref-for-autofillevent-dispatch-timestamp\u2460"}],"title":"4.2. Processing a Refill Request"}],"url":"#autofillevent-dispatch-timestamp"},
 "autofillevent-refill-pending-flag": {"dfnID":"autofillevent-refill-pending-flag","dfnText":"refill pending flag","external":false,"refSections":[{"refs":[{"id":"ref-for-autofillevent-refill-pending-flag"},{"id":"ref-for-autofillevent-refill-pending-flag\u2460"}],"title":"4.2. Processing a Refill Request"}],"url":"#autofillevent-refill-pending-flag"},
-"autofillevent-values-list": {"dfnID":"autofillevent-values-list","dfnText":"values list","external":false,"refSections":[{"refs":[{"id":"ref-for-autofillevent-values-list"}],"title":"4.1. Firing the Autofill Event"}],"url":"#autofillevent-values-list"},
 "b08d0bb2": {"dfnID":"b08d0bb2","dfnText":"HTMLElement","external":true,"refSections":[{"refs":[{"id":"ref-for-htmlelement"}],"title":"1.2. Example"},{"refs":[{"id":"ref-for-htmlelement\u2460"}],"title":"2.1. Autofill Value Entries"},{"refs":[{"id":"ref-for-htmlelement\u2461"}],"title":"3.1. Attributes"}],"url":"https://html.spec.whatwg.org/multipage/dom.html#htmlelement"},
 "bdbd19d1": {"dfnID":"bdbd19d1","dfnText":"Promise","external":true,"refSections":[{"refs":[{"id":"ref-for-idl-promise"}],"title":"3. The AutofillEvent Interface"},{"refs":[{"id":"ref-for-idl-promise\u2460"}],"title":"3.1. Attributes"}],"url":"https://webidl.spec.whatwg.org/#idl-promise"},
 "callbackdef-refillcallback": {"dfnID":"callbackdef-refillcallback","dfnText":"RefillCallback","external":false,"refSections":[{"refs":[{"id":"ref-for-callbackdef-refillcallback"}],"title":"3. The AutofillEvent Interface"},{"refs":[{"id":"ref-for-callbackdef-refillcallback\u2460"}],"title":"3.1. Attributes"}],"url":"#callbackdef-refillcallback"},
@@ -1517,10 +1517,10 @@ let dfnPanelData = {
 "dom-autofillevent-autofillevent": {"dfnID":"dom-autofillevent-autofillevent","dfnText":"constructor","external":false,"refSections":[],"url":"#dom-autofillevent-autofillevent"},
 "dom-autofillevent-autofillevent-type-eventinitdict-eventinitdict": {"dfnID":"dom-autofillevent-autofillevent-type-eventinitdict-eventinitdict","dfnText":"eventInitDict","external":false,"refSections":[],"url":"#dom-autofillevent-autofillevent-type-eventinitdict-eventinitdict"},
 "dom-autofillevent-autofillevent-type-eventinitdict-type": {"dfnID":"dom-autofillevent-autofillevent-type-eventinitdict-type","dfnText":"type","external":false,"refSections":[],"url":"#dom-autofillevent-autofillevent-type-eventinitdict-type"},
+"dom-autofillevent-autofillvalues": {"dfnID":"dom-autofillevent-autofillvalues","dfnText":"autofillValues","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-autofillevent-autofillvalues"}],"title":"1.2. Example"},{"refs":[{"id":"ref-for-dom-autofillevent-autofillvalues\u2460"}],"title":"3. The AutofillEvent Interface"}],"url":"#dom-autofillevent-autofillvalues"},
 "dom-autofillevent-refill": {"dfnID":"dom-autofillevent-refill","dfnText":"refill","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-autofillevent-refill"},{"id":"ref-for-dom-autofillevent-refill\u2460"}],"title":"1.2. Example"},{"refs":[{"id":"ref-for-dom-autofillevent-refill\u2461"}],"title":"3. The AutofillEvent Interface"},{"refs":[{"id":"ref-for-dom-autofillevent-refill\u2462"},{"id":"ref-for-dom-autofillevent-refill\u2463"}],"title":"3.1. Attributes"},{"refs":[{"id":"ref-for-dom-autofillevent-refill\u2464"}],"title":"4.1. Firing the Autofill Event"},{"refs":[{"id":"ref-for-dom-autofillevent-refill\u2465"},{"id":"ref-for-dom-autofillevent-refill\u2466"},{"id":"ref-for-dom-autofillevent-refill\u2467"}],"title":"4.2. Processing a Refill Request"}],"url":"#dom-autofillevent-refill"},
-"dom-autofillevent-values": {"dfnID":"dom-autofillevent-values","dfnText":"values","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-autofillevent-values"}],"title":"1.2. Example"},{"refs":[{"id":"ref-for-dom-autofillevent-values\u2460"}],"title":"3. The AutofillEvent Interface"}],"url":"#dom-autofillevent-values"},
 "dom-autofilleventinit-allowrefill": {"dfnID":"dom-autofilleventinit-allowrefill","dfnText":"allowRefill","external":false,"refSections":[],"url":"#dom-autofilleventinit-allowrefill"},
-"dom-autofilleventinit-values": {"dfnID":"dom-autofilleventinit-values","dfnText":"values","external":false,"refSections":[],"url":"#dom-autofilleventinit-values"},
+"dom-autofilleventinit-autofillvalues": {"dfnID":"dom-autofilleventinit-autofillvalues","dfnText":"autofillValues","external":false,"refSections":[],"url":"#dom-autofilleventinit-autofillvalues"},
 "e0c643f4": {"dfnID":"e0c643f4","dfnText":"autofill","external":true,"refSections":[{"refs":[{"id":"ref-for-autofill"},{"id":"ref-for-autofill\u2460"}],"title":"1. Introduction"},{"refs":[{"id":"ref-for-autofill\u2461"}],"title":"3. The AutofillEvent Interface"},{"refs":[{"id":"ref-for-autofill\u2462"}],"title":"4.1. Firing the Autofill Event"},{"refs":[{"id":"ref-for-autofill\u2463"}],"title":"4.2. Processing a Refill Request"},{"refs":[{"id":"ref-for-autofill\u2464"}],"title":"4.3. Integration with HTML Autofill"}],"url":"https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill"},
 "ec54d0e7": {"dfnID":"ec54d0e7","dfnText":"autofill field name","external":true,"refSections":[{"refs":[{"id":"ref-for-autofill-field"}],"title":"2.1. Autofill Value Entries"},{"refs":[{"id":"ref-for-autofill-field\u2460"}],"title":"5. The \"full-address\" Autocomplete Token"}],"url":"https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill-field"},
 "fire-an-autofill-event": {"dfnID":"fire-an-autofill-event","dfnText":"fire an autofill event","external":false,"refSections":[{"refs":[{"id":"ref-for-fire-an-autofill-event"}],"title":"4.2. Processing a Refill Request"},{"refs":[{"id":"ref-for-fire-an-autofill-event\u2460"}],"title":"4.3. Integration with HTML Autofill"}],"url":"#fire-an-autofill-event"},
@@ -1918,13 +1918,13 @@ let refsData = {
 "#autofill-value-entry": {"displayText":"autofill value entry","export":true,"for_":[],"level":"1","normative":true,"shortname":"autofill-event","spec":"autofill-event-1","status":"local","text":"autofill value entry","type":"dfn","url":"#autofill-value-entry"},
 "#autofillevent": {"displayText":"AutofillEvent","export":true,"for_":[],"level":"1","normative":true,"shortname":"autofill-event","spec":"autofill-event-1","status":"local","text":"AutofillEvent","type":"interface","url":"#autofillevent"},
 "#autofillevent-allow-refill-flag": {"displayText":"allow refill flag","export":true,"for_":["AutofillEvent"],"level":"1","normative":true,"shortname":"autofill-event","spec":"autofill-event-1","status":"local","text":"allow refill flag","type":"dfn","url":"#autofillevent-allow-refill-flag"},
+"#autofillevent-autofill-values-list": {"displayText":"autofill values list","export":true,"for_":["AutofillEvent"],"level":"1","normative":true,"shortname":"autofill-event","spec":"autofill-event-1","status":"local","text":"autofill values list","type":"dfn","url":"#autofillevent-autofill-values-list"},
 "#autofillevent-dispatch-timestamp": {"displayText":"dispatch timestamp","export":true,"for_":["AutofillEvent"],"level":"1","normative":true,"shortname":"autofill-event","spec":"autofill-event-1","status":"local","text":"dispatch timestamp","type":"dfn","url":"#autofillevent-dispatch-timestamp"},
 "#autofillevent-refill-pending-flag": {"displayText":"refill pending flag","export":true,"for_":["AutofillEvent"],"level":"1","normative":true,"shortname":"autofill-event","spec":"autofill-event-1","status":"local","text":"refill pending flag","type":"dfn","url":"#autofillevent-refill-pending-flag"},
-"#autofillevent-values-list": {"displayText":"values list","export":true,"for_":["AutofillEvent"],"level":"1","normative":true,"shortname":"autofill-event","spec":"autofill-event-1","status":"local","text":"values list","type":"dfn","url":"#autofillevent-values-list"},
 "#callbackdef-refillcallback": {"displayText":"RefillCallback","export":true,"for_":[],"level":"1","normative":true,"shortname":"autofill-event","spec":"autofill-event-1","status":"local","text":"RefillCallback","type":"callback","url":"#callbackdef-refillcallback"},
 "#dictdef-autofilleventinit": {"displayText":"AutofillEventInit","export":true,"for_":[],"level":"1","normative":true,"shortname":"autofill-event","spec":"autofill-event-1","status":"local","text":"AutofillEventInit","type":"dictionary","url":"#dictdef-autofilleventinit"},
+"#dom-autofillevent-autofillvalues": {"displayText":"autofillValues","export":true,"for_":["AutofillEvent"],"level":"1","normative":true,"shortname":"autofill-event","spec":"autofill-event-1","status":"local","text":"autofillValues","type":"attribute","url":"#dom-autofillevent-autofillvalues"},
 "#dom-autofillevent-refill": {"displayText":"refill","export":true,"for_":["AutofillEvent"],"level":"1","normative":true,"shortname":"autofill-event","spec":"autofill-event-1","status":"local","text":"refill","type":"attribute","url":"#dom-autofillevent-refill"},
-"#dom-autofillevent-values": {"displayText":"values","export":true,"for_":["AutofillEvent"],"level":"1","normative":true,"shortname":"autofill-event","spec":"autofill-event-1","status":"local","text":"values","type":"attribute","url":"#dom-autofillevent-values"},
 "#fire-an-autofill-event": {"displayText":"fire an autofill event","export":true,"for_":[],"level":"1","normative":true,"shortname":"autofill-event","spec":"autofill-event-1","status":"local","text":"fire an autofill event","type":"dfn","url":"#fire-an-autofill-event"},
 "#typedefdef-autofillvalueentry": {"displayText":"AutofillValueEntry","export":true,"for_":[],"level":"1","normative":true,"shortname":"autofill-event","spec":"autofill-event-1","status":"local","text":"AutofillValueEntry","type":"typedef","url":"#typedefdef-autofillvalueentry"},
 "https://dom.spec.whatwg.org/#concept-document": {"displayText":"document","export":true,"for_":[],"level":"1","normative":true,"shortname":"dom","spec":"dom","status":"current","text":"document","type":"dfn","url":"https://dom.spec.whatwg.org/#concept-document"},
