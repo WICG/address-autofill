@@ -316,11 +316,14 @@ Using `full-address` to enable comprehensive address autofill:
 
 # Security and Privacy Considerations # {#security-privacy}
 
-## Timing Attacks ## {#timing-attacks}
-
 The {{AutofillEvent}} exposes autofill values to JavaScript before they are committed to form 
 fields. User agents SHOULD ensure that the event is only fired after explicit user consent to 
 autofill has been given (e.g., by selecting an autofill suggestion from a dropdown).
+
+The data passed to the event is limited to data that the user agent intends to fill into forms on the page, given that the API shape requires an element as the key to the autofill values.
+
+Note that when the event fires after a `refill()` call, the form is likely to include new fields that weren't present the first time the user agent filled the form. The user agent should
+still consider user consent before filling in the new form fields, as is already the case for automatic refills in user agents that support them.
 
 ## Third-Party Autofill Providers ## {#third-party-providers}
 
