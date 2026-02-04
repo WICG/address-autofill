@@ -6,7 +6,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/cg-draft" rel="stylesheet">
   <meta content="Bikeshed version 3c53a5b02, updated Thu Nov 27 17:03:30 2025 +0000" name="generator">
   <link href="https://wicg.github.io/autofill-event/" rel="canonical">
-  <meta content="29a59989f87822854863a9a87fce5da40b59e971" name="revision">
+  <meta content="8a7af46296b8dfa42deeabbc3d53b1c6ec51e590" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -737,7 +737,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
   <div class="head">
    <h1 class="no-ref p-name" id="title">Autofill Event</h1>
    <p id="w3c-state"><a href="https://www.w3.org/standards/types/#CG-DRAFT">Draft Community Group Report</a>,
-    <time class="dt-updated" datetime="2026-01-20">20 January 2026</time></p>
+    <time class="dt-updated" datetime="2026-02-04">4 February 2026</time></p>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -806,8 +806,7 @@ A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/
     <li>
      <a href="#security-privacy"><span class="secno">6</span> <span class="content">Security and Privacy Considerations</span></a>
      <ol class="toc">
-      <li><a href="#timing-attacks"><span class="secno">6.1</span> <span class="content">Timing Attacks</span></a>
-      <li><a href="#third-party-providers"><span class="secno">6.2</span> <span class="content">Third-Party Autofill Providers</span></a>
+      <li><a href="#third-party-providers"><span class="secno">6.1</span> <span class="content">Third-Party Autofill Providers</span></a>
      </ol>
     <li>
      <a href="#w3c-conformance"><span class="secno"></span> <span class="content">Conformance</span></a>
@@ -1106,11 +1105,13 @@ Using <code>full-address</code> to enable comprehensive address autofill:
 </pre>
    </div>
    <h2 class="heading settled" data-level="6" id="security-privacy"><span class="secno">6. </span><span class="content">Security and Privacy Considerations</span><a class="self-link" href="#security-privacy"></a></h2>
-   <h3 class="heading settled" data-level="6.1" id="timing-attacks"><span class="secno">6.1. </span><span class="content">Timing Attacks</span><a class="self-link" href="#timing-attacks"></a></h3>
    <p>The <code class="idl"><a data-link-type="idl" href="#autofillevent" id="ref-for-autofillevent⑨">AutofillEvent</a></code> exposes autofill values to JavaScript before they are committed to form
 fields. User agents SHOULD ensure that the event is only fired after explicit user consent to 
 autofill has been given (e.g., by selecting an autofill suggestion from a dropdown).</p>
-   <h3 class="heading settled" data-level="6.2" id="third-party-providers"><span class="secno">6.2. </span><span class="content">Third-Party Autofill Providers</span><a class="self-link" href="#third-party-providers"></a></h3>
+   <p>The data passed to the event is limited to data that the user agent intends to fill into forms on the page, given that the API shape requires an element as the key to the autofill values.</p>
+   <p>Note that when the event fires after a <code>refill()</code> call, the form is likely to include new fields that weren’t present the first time the user agent filled the form. The user agent should
+still consider user consent before filling in the new form fields, as is already the case for automatic refills in user agents that support them.</p>
+   <h3 class="heading settled" data-level="6.1" id="third-party-providers"><span class="secno">6.1. </span><span class="content">Third-Party Autofill Providers</span><a class="self-link" href="#third-party-providers"></a></h3>
    <p>Browser extensions and third-party autofill providers (such as password managers) can
 utilize this API by constructing and dispatching <code class="idl"><a data-link-type="idl" href="#autofillevent" id="ref-for-autofillevent①⓪">AutofillEvent</a></code>s with the same structure, 
 ensuring consistent behavior regardless of the autofill source.</p>
@@ -1501,7 +1502,7 @@ let dfnPanelData = {
 "a973e0fe": {"dfnID":"a973e0fe","dfnText":"document","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-document"}],"title":"4.1. Firing the Autofill Event"},{"refs":[{"id":"ref-for-concept-document\u2460"}],"title":"4.2. Processing a Refill Request"}],"url":"https://dom.spec.whatwg.org/#concept-document"},
 "attr-valuedef-autocomplete-full-address": {"dfnID":"attr-valuedef-autocomplete-full-address","dfnText":"full-address","external":false,"refSections":[],"url":"#attr-valuedef-autocomplete-full-address"},
 "autofill-value-entry": {"dfnID":"autofill-value-entry","dfnText":"autofill value entry","external":false,"refSections":[{"refs":[{"id":"ref-for-autofill-value-entry"}],"title":"1.2. Example"},{"refs":[{"id":"ref-for-autofill-value-entry\u2460"},{"id":"ref-for-autofill-value-entry\u2461"}],"title":"3.1. Attributes"},{"refs":[{"id":"ref-for-autofill-value-entry\u2462"}],"title":"4.1. Firing the Autofill Event"},{"refs":[{"id":"ref-for-autofill-value-entry\u2463"}],"title":"4.2. Processing a Refill Request"}],"url":"#autofill-value-entry"},
-"autofillevent": {"dfnID":"autofillevent","dfnText":"AutofillEvent","external":false,"refSections":[{"refs":[{"id":"ref-for-autofillevent"}],"title":"1. Introduction"},{"refs":[{"id":"ref-for-autofillevent\u2460"}],"title":"3. The AutofillEvent Interface"},{"refs":[{"id":"ref-for-autofillevent\u2461"},{"id":"ref-for-autofillevent\u2462"},{"id":"ref-for-autofillevent\u2463"},{"id":"ref-for-autofillevent\u2464"}],"title":"3.1. Attributes"},{"refs":[{"id":"ref-for-autofillevent\u2465"}],"title":"4.1. Firing the Autofill Event"},{"refs":[{"id":"ref-for-autofillevent\u2466"}],"title":"4.2. Processing a Refill Request"},{"refs":[{"id":"ref-for-autofillevent\u2467"}],"title":"5. The \"full-address\" Autocomplete Token"},{"refs":[{"id":"ref-for-autofillevent\u2468"}],"title":"6.1. Timing Attacks"},{"refs":[{"id":"ref-for-autofillevent\u2460\u24ea"}],"title":"6.2. Third-Party Autofill Providers"}],"url":"#autofillevent"},
+"autofillevent": {"dfnID":"autofillevent","dfnText":"AutofillEvent","external":false,"refSections":[{"refs":[{"id":"ref-for-autofillevent"}],"title":"1. Introduction"},{"refs":[{"id":"ref-for-autofillevent\u2460"}],"title":"3. The AutofillEvent Interface"},{"refs":[{"id":"ref-for-autofillevent\u2461"},{"id":"ref-for-autofillevent\u2462"},{"id":"ref-for-autofillevent\u2463"},{"id":"ref-for-autofillevent\u2464"}],"title":"3.1. Attributes"},{"refs":[{"id":"ref-for-autofillevent\u2465"}],"title":"4.1. Firing the Autofill Event"},{"refs":[{"id":"ref-for-autofillevent\u2466"}],"title":"4.2. Processing a Refill Request"},{"refs":[{"id":"ref-for-autofillevent\u2467"}],"title":"5. The \"full-address\" Autocomplete Token"},{"refs":[{"id":"ref-for-autofillevent\u2468"}],"title":"6. Security and Privacy Considerations"},{"refs":[{"id":"ref-for-autofillevent\u2460\u24ea"}],"title":"6.1. Third-Party Autofill Providers"}],"url":"#autofillevent"},
 "autofillevent-allow-refill-flag": {"dfnID":"autofillevent-allow-refill-flag","dfnText":"allow refill flag","external":false,"refSections":[{"refs":[{"id":"ref-for-autofillevent-allow-refill-flag"}],"title":"4.1. Firing the Autofill Event"},{"refs":[{"id":"ref-for-autofillevent-allow-refill-flag\u2460"}],"title":"4.2. Processing a Refill Request"}],"url":"#autofillevent-allow-refill-flag"},
 "autofillevent-autofill-values-list": {"dfnID":"autofillevent-autofill-values-list","dfnText":"autofill values list","external":false,"refSections":[{"refs":[{"id":"ref-for-autofillevent-autofill-values-list"}],"title":"4.1. Firing the Autofill Event"}],"url":"#autofillevent-autofill-values-list"},
 "autofillevent-dispatch-timestamp": {"dfnID":"autofillevent-dispatch-timestamp","dfnText":"dispatch timestamp","external":false,"refSections":[{"refs":[{"id":"ref-for-autofillevent-dispatch-timestamp"}],"title":"4.1. Firing the Autofill Event"},{"refs":[{"id":"ref-for-autofillevent-dispatch-timestamp\u2460"}],"title":"4.2. Processing a Refill Request"}],"url":"#autofillevent-dispatch-timestamp"},
